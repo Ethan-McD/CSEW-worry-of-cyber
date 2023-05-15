@@ -1,0 +1,430 @@
+library(dplyr)
+library(plyr)
+library(psych)
+library(lavaan)
+library(car)
+library(lmtest)
+
+#Create CSEW dataset
+csew <- select(csew_apr19mar20_nvf, sex, ethgrp2a, age, educint, tothhin4,
+                wident, wfraud, wmugged, wraped, wattack, wraceatt, 
+                 locpolcc1a, locpolcc1b, locpolcc1c, locpolcc1d,
+                 noncon, con, trycon, cmact2, virus, fininc,
+                 persthef, delibvio, sexattak, delibdam, oththef, threviol2)
+
+
+#NULL VARIABLES 
+csew$sex <- as_factor(csew$sex)
+csew$age[csew$age>=998] <- NA
+csew$age_grp <- revalue(csew$age,
+                     c("16" = "16-25",
+                       "17" = "16-25",
+                       "18" = "16-25",
+                       "19" = "16-25",
+                       "20" = "16-25",
+                       "21" = "16-25",
+                       "22" = "16-25",
+                       "23" = "16-25",
+                       "24" = "16-25",
+                       "25" = "16-25",
+                       "26" = "26-39",
+                       "27" = "26-39",
+                       "28" = "26-39",
+                       "29" = "26-39",
+                       "30" = "26-39",
+                       "31" = "26-39",
+                       "32" = "26-39",
+                       "33" = "26-39",
+                       "34" = "26-39",
+                       "35" = "26-39",
+                       "36" = "26-39",
+                       "37" = "26-39",
+                       "38" = "26-39",
+                       "39" = "26-39",
+                       "40" = "40-55",
+                       "41" = "40-55",
+                       "42" = "40-55",
+                       "43" = "40-55",
+                       "44" = "40-55",
+                       "45" = "40-55",
+                       "46" = "40-55",
+                       "47" = "40-55",
+                       "48" = "40-55",
+                       "49" = "40-55",
+                       "50" = "40-55",
+                       "51" = "40-55",
+                       "52" = "40-55",
+                       "53" = "40-55",
+                       "54" = "40-55",
+                       "55" = "40-55",
+                       "56" = "56-69",
+                       "57" = "56-69",
+                       "58" = "56-69",
+                       "59" = "56-69",
+                       "60" = "56-69",
+                       "61" = "56-69",
+                       "62" = "56-69",
+                       "63" = "56-69",
+                       "64" = "56-69",
+                       "65" = "56-69",
+                       "66" = "56-69",
+                       "67" = "56-69",
+                       "68" = "56-69",
+                       "69" = "56-69",
+                       "70" = "+70",
+                       "71" = "+70",
+                       "72" = "+70",
+                       "73" = "+70",
+                       "74" = "+70",
+                       "75" = "+70",
+                       "76" = "+70",
+                       "77" = "+70",
+                       "78" = "+70",
+                       "79" = "+70",
+                       "80" = "+70",
+                       "81" = "+70",
+                       "82" = "+70",
+                       "83" = "+70",
+                       "84" = "+70",
+                       "85" = "+70",
+                       "86" = "+70",
+                       "87" = "+70",
+                       "88" = "+70",
+                       "89" = "+70",
+                       "90" = "+70",
+                       "91" = "+70",
+                       "92" = "+70",
+                       "93" = "+70",
+                       "94" = "+70",
+                       "95" = "+70",
+                       "96" = "+70",
+                       "97" = "+70",
+                       "98" = "+70",
+                       "99" = "+70",
+                       "100" = "+70",
+                       "104" = "+70"))
+csew$ethnic <- as_factor(csew$ethgrp2a)
+csew$tothhin4[csew$tothhin4>=7] <- NA
+csew$income <- as_factor(csew$tothhin4)
+csew$incomelvl <- revalue(csew$income, 
+                        c("Up to 10,399" = "Lower Class",
+                          "10,400 -20,799" = "Lower Class",
+                          "20,800 -31,199" = "Middle Class",
+                          "31,200-41,599" = "Middle Class",
+                          "41,600 -51,999" = "Upper Class",
+                          "52,000 or more" = "Upper Class"))
+csew$educint[csew$educint>=8] <- NA
+csew$education <- as_factor(csew$educint)
+attributes(csew$age)
+
+
+
+
+#WORRY VARIABLES:
+#Removes NA from worry variables
+csew$wident[csew$wident>=5] <- NA
+csew$wfraud[csew$wfraud>=5] <- NA
+csew$wmugged[csew$wmugged>=5] <- NA
+csew$wraped[csew$wraped>=5] <- NA
+csew$wattack[csew$wattack>=5] <- NA
+csew$wraceatt[csew$wraceatt>=5] <- NA
+
+#As factor (Worry)
+csew$ident <- as_factor(csew$wident)
+csew$fraud <- as_factor(csew$wfraud)
+csew$mugged <- as_factor(csew$wmugged)
+csew$raped <- as_factor(csew$wraped)
+csew$attack <- as_factor(csew$wattack)
+csew$raceatt <- as_factor(csew$wraceatt)
+
+#Recode variables (worry levels)
+csew$fraud <- revalue(csew$fraud, c("Not at all worried" = "1", 
+                                        "Not very worried" = "2",
+                                        "Fairly worried" = "3",
+                                        "Very worried" = "4"))
+
+csew$ident <- revalue(csew$ident, c("Not at all worried" = "1", 
+                                        "Not very worried" = "2",
+                                        "Fairly worried" = "3",
+                                        "Very worried" = "4"))
+
+csew$mugged <- revalue(csew$mugged, c("Not at all worried" = "1", 
+                                        "Not very worried" = "2",
+                                        "Fairly worried" = "3",
+                                        "Very worried" = "4"))
+
+csew$raped <- revalue(csew$raped, c("Not at all worried" = "1", 
+                                        "Not very worried" = "2",
+                                        "Fairly worried" = "3",
+                                        "Very worried" = "4"))
+
+csew$attack <- revalue(csew$attack, c("Not at all worried" = "1", 
+                                      "Not very worried" = "2",
+                                      "Fairly worried" = "3",
+                                      "Very worried" = "4"))
+
+csew$raceatt <- revalue(csew$raceatt, c("Not at all worried" = "1", 
+                                        "Not very worried" = "2",
+                                        "Fairly worried" = "3",
+                                        "Very worried" = "4"))
+
+#Numeric (worry)
+csew$wfraud_n <- as.numeric(as.character(csew$fraud))
+csew$wident_n <- as.numeric(as.character(csew$ident))
+csew$wmugged_n <- as.numeric(as.character(csew$mugged))
+csew$wraped_n <- as.numeric(as.character(csew$raped))
+csew$wattack_n <- as.numeric(as.character(csew$attack))
+csew$wraceatt_n <- as.numeric(as.character(csew$raceatt))
+
+#CYBER summative variable, a = 0.89
+csew$WCYBER <- rowMeans(csew[,
+                            c("wfraud_n", "wident_n")], 
+                       na.rm = TRUE) 
+                       
+csew$WCYBER2 <- as_factor(csew$wCYBER)
+
+csew$RCYBER <- revalue(csew$WCYBER2, c(
+                      "1" = "1" ,
+                      "1.5" = "1",
+                      "2" = "2",
+                      "2.5" = "2",
+                      "3" = "3",
+                      "3.5" = "3",
+                      "4" = "4"))
+                    
+#CRIME summative variable, a = 0.85
+csew$WCRIME <- rowMeans(csew[,
+                             c("wmugged_n", "wraped_n", "wattack_n", "wraceatt_n")], 
+                        na.rm = TRUE)
+csew$WCRIME2 <- as_factor(csew$WCRIME)
+
+csew$RCRIME <- revalue(csew$WCRIME2, c(
+                "1" = "1" ,
+                "1.25" = "1",
+                "1.33333333333333" = "1",
+                "1.5" = "1",
+                "1.66666666666667" = "2",
+                "1.75" = "2",
+                "2" = "2",
+                "2.25" = "2",
+                "2.33333333333333" = "2",
+                "2.5" = "2",
+                "2.66666666666667" = "3",
+                "2.75" = "3",
+                "3" = "3",
+                "3.25" = "3",
+                "3.33333333333333" = "3",
+                "3.5" = "3",
+                "3.66666666666667" = "4",
+                "3.75" = "4",
+                "4" = "4"))
+
+
+
+
+#POLICE VARIABLES
+#Removes NA from police variables
+csew$locpolcc1a[csew$locpolcc1a>=8] <- NA
+csew$locpolcc1b[csew$locpolcc1b>=8] <- NA
+csew$locpolcc1c[csew$locpolcc1c>=8] <- NA
+csew$locpolcc1d[csew$locpolcc1d>=8] <- NA
+
+#As Factor (police)
+csew$pol1a <- as_factor(csew$locpolcc1a)
+csew$pol1b <- as_factor(csew$locpolcc1b)
+csew$pol1c <- as_factor(csew$locpolcc1c)
+csew$pol1d <- as_factor(csew$locpolcc1d)
+
+table(csew$pol1a)
+#Recode locpolcc1 variables (AWARE)
+csew$pol1a <- revalue(csew$pol1a, 
+                      c("no Visiting victims of cyber crime" = "unaware",
+                                    "Visiting victims of cyber crime" = "aware"))
+
+csew$pol1b <- revalue(csew$pol1b, 
+                      c("no Working with Action Fraud to investigate cyber crimes" = "unaware",
+                       "Working with Action Fraud to investigate cyber crimes" = "aware"))
+
+csew$pol1c <- revalue(csew$pol1c, 
+                      c("no Providing advice about how people can protect themselves from cyber crime and be secure online" = "unaware",
+                       "Providing advice about how people can protect themselves from cyber crime and be secure online" = "aware"))
+
+csew$pol1d <- revalue(csew$pol1d, 
+                      c("no Explaining/ warning of the consequences of committing cyber crimes" = "unaware" ,
+                       "Explaining/ warning of the consequences of committing cyber crimes" = "aware"))
+
+#Recode pol1 variable levels
+csew$pol1a <- revalue(csew$pol1a, c("aware" = "1",
+                                    "unaware" = "0"))
+csew$pol1b <- revalue(csew$pol1b, c("aware" = "1",
+                                    "unaware" = "0"))
+csew$pol1c <- revalue(csew$pol1c, c("aware" = "1",
+                                    "unaware" = "0"))
+csew$pol1d <- revalue(csew$pol1d, c("aware" = "1",
+                                    "unaware" = "0"))
+
+#Numeric (Police)
+csew$pol1a_n <- as.numeric(as.character(csew$pol1a))
+csew$pol1b_n <- as.numeric(as.character(csew$pol1b))
+csew$pol1c_n <- as.numeric(as.character(csew$pol1c))
+csew$pol1d_n <- as.numeric(as.character(csew$pol1d))
+
+#Summative pol1 Variable
+ csew$PAWARE <- rowMeans(csew[,
+                c("pol1a_n", "pol1b_n", "pol1c_n", "pol1d_n")], 
+                na.rm = TRUE) 
+ 
+csew$PAWARE2 <- rowMeans(csew[,
+                              c("pol1a_n", "pol1b_n", "pol1c_n", "pol1d_n")], 
+                         na.rm = TRUE) 
+csew$PAWARE2[csew$PAWARE2 >=0.2] <- 1
+csew$RPAWARE <- as_factor(csew$PAWARE2)
+
+
+
+
+#CYBER VICTIMISATION VARIABLES
+#removes NA from variables
+csew$noncon[csew$noncon>=8] <- NA
+csew$con[csew$con>=8] <- NA
+csew$trycon[csew$trycon>=8] <- NA
+csew$cmact2[csew$cmact2>=8] <- NA
+csew$virus[csew$virus>=8] <- NA
+
+#As factor (cyber victim)
+csew$noncon <- as_factor(csew$noncon)
+csew$con <- as_factor(csew$con)
+csew$trycon <- as_factor(csew$trycon)
+csew$cmact2 <- as_factor(csew$cmact2)
+csew$virus <- as_factor(csew$virus)
+csew$fininc <- as_factor(csew$fininc)
+
+#Recode variables (cyber victimisation)
+csew$noncon <- revalue(csew$noncon, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$cmact2 <- revalue(csew$cmact2, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$con <- revalue(csew$con, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$trycon <- revalue(csew$trycon, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$virus <- revalue(csew$virus, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+#Numeric (Cyber victimisation)
+csew$noncon_n <- as.numeric(as.character(csew$noncon))
+csew$con_n <- as.numeric(as.character(csew$con))
+csew$trycon_n <- as.numeric(as.character(csew$trycon))
+csew$cmact2_n <- as.numeric(as.character(csew$cmact2))
+csew$virus_n <- as.numeric(as.character(csew$virus))
+
+#Summative Variable (cyber victim)
+csew$CYVICTIM <- rowMeans(csew[,
+                             c("noncon_n", "con_n", "trycon_n", "cmact2_n", "virus_n")], 
+                        na.rm = TRUE) 
+csew$CYVICTIM[csew$CYVICTIM >=0.2] <- 1
+
+
+
+
+#VICTIMISATION VARIABLES
+#remove NA from variables
+csew$persthef[csew$persthef>=8] <- NA
+csew$delibvio[csew$delibvio>=8] <- NA
+csew$sexattak[csew$sexattak>=8] <- NA
+csew$delibdam[csew$delibdam>=8] <- NA
+csew$oththef[csew$oththef>=8] <- NA
+csew$threviol2[csew$threviol2>=8] <- NA
+
+#As factor (victim)
+csew$Vmugged <- as_factor(csew$persthef)
+csew$Vattack <- as_factor(csew$delibvio)
+csew$Vraped <- as_factor(csew$sexattak)
+csew$Vdamage <- as_factor(csew$delibdam)
+csew$Vtheft <- as_factor(csew$oththef)
+csew$Vthreat <- as_factor(csew$threviol2)
+
+attributes(csew$persthef)
+#Recode Victim Variables
+csew$Vmugged <- revalue(csew$Vmugged, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$Vattack <- revalue(csew$Vattack, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$Vraped <- revalue(csew$Vraped, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$Vdamage <- revalue(csew$Vdamage, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$Vtheft <- revalue(csew$Vtheft, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+csew$Vthreat <- revalue(csew$Vthreat, 
+                       c("Yes" = "1",
+                         "No" = "0"))
+
+#Numeric (Victimisation)
+csew$Vmugged_n <- as.numeric(as.character(csew$Vmugged))
+csew$Vattack_n <- as.numeric(as.character(csew$Vattack))
+csew$Vraped_n <- as.numeric(as.character(csew$Vraped))
+csew$Vdamage_n <- as.numeric(as.character(csew$Vdamage))
+csew$Vtheft_n <- as.numeric(as.character(csew$Vtheft))
+csew$Vthreat_n <- as.numeric(as.character(csew$Vthreat))
+
+csew$persthef <- as.factor(csew$Vmugged)
+csew$delibvio <- as.character(csew$Vmugged)
+csew$sexattak <- as.character(csew$Vraped)
+csew$delibdam <- as.character(csew$Vdamage)
+csew$oththef <- as.character(csew$Vtheft)
+csew$threviol2 <- as.character(csew$Vthreat)
+
+csew$persthef <- revalue(csew$Vmugged, 
+                        c("Yes" = "1",
+                          "No" = "0"))
+csew$persthef <- as_factor(csew$persthef)
+
+#Summative Variables (victim)
+csew$VICTIM <- rowMeans(csew[,
+                        c("Vmugged_n", "Vattack_n", "Vraped_n", "Vdamage_n", "Vtheft_n", "Vthreat_n")], 
+                        na.rm = TRUE)
+csew$VICTIM[csew$VICTIM >=0.1] <- 1
+
+
+
+
+#Cross Tables
+library(gmodels)
+with(csew, CrossTable(__, __, 
+                      prop.chisq=FALSE, 
+                      prop.c=FALSE, 
+                      prop.t=FALSE,  
+                      format = c("SPSS")))
+
+#Regression Model
+library(lmtest)
+                                          
+ind_model <- lm(WCYBER ~ PAWARE + CYVICTIM + VICTIM, data= csew)
+nullmodel <- lm(WCYBER ~ sex + age_grp + ethnic + education + incomelvl, data = csew)
+finalmodel <- lm(WCYBER ~ sex + age_grp + ethnic + education + incomelvl + PAWARE + CYVICTIM + VICTIM, data= csew)
+ind_model2 <- lm(WCRIME ~ PAWARE + CYVICTIM + VICTIM, data= csew)
+nullmodel2 <- lm(WCRIME ~ sex + age_grp + ethnic + education + incomelvl, data = csew)
+finalmodel2 <- lm(WCRIME ~ sex + age_grp + ethnic + education + incomelvl + PAWARE + CYVICTIM + VICTIM, data= csew)
+
+summary(__model)
+vif(__model)
