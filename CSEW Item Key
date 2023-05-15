@@ -1,0 +1,207 @@
+WORRY OF CYBERCRIME
+  wident = "How worried are you about your personal details being used without your permission":
+            1 = Very worried (1663)
+            2 = Fairly worried (3202)
+            3 = Not very worried (2138)
+            4 = Not at all worried (948)
+            
+  wfraud = "How worried are you being a victim of fraud":
+            1 = Very worried (1580)
+            2 = Fairly worried (3194)
+            3 = Not very worried (2287)
+            4 = Not at all worried (899)
+  
+  
+WORRY OF CRIME
+  wmugged = "How worried about being mugged and robbed":
+            1 = Very worried (433)
+            2 = Fairly worried (1509)
+            3 = Not very worried (3880)
+            4 = Not at all worried (2137)
+            
+  wraped = "How worried about being raped":
+            1 = Very worried (412)
+            2 = Fairly worried (628)
+            3 = Not very worried (2433)
+            4 = Not at all worried (4383)
+            
+  wattack = "How worried about being physically attacked by strangers":
+            1 = Very worried (470)
+            2 = Fairly worried (1447)
+            3 = Not very worried (3711)
+            4 = Not at all worried (2332)
+            
+  wraceatt = "How worried about being attacked because of skin colour, ethnic origin or religion":
+            1 = Very worried (237)
+            2 = Fairly worried (512)
+            3 = Not very worried (2326)
+            4 = Not at all worried (4839)
+  
+  
+POLICE AWARENESS
+  locpolcc1a = "Visiting victims of cyber crime":
+                1 = Yes (470)
+                0 = No (33250)
+                
+  locpolcc1b = "Working with Action Fraud to investigate cyber crimes":
+                1 = Yes (740)
+                0 = No (32980)
+                
+  locpolcc1c = "Providing advice about how people can protect themselves from cyber crime and be secure online":
+                1 = Yes (2361)
+                0 = No (31359)
+                
+  locpolcc1d = "Explaining/ warning of the consequences of committing cyber crimes":
+                1 = Yes (1083)
+                0 = No (32637)
+                
+                
+CYBER VICTIMISATION
+  noncon = "If personal information or account details used to obtain money or buy goods or services":
+            1 = Yes (1609)
+            2 = No (32075)
+            
+  con = "If tricked or deceived out of money or goods in person, by telephone, or online":
+            1 = Yes (481)
+            2 = No (33225)
+            
+  trycon = "If anyone tried to trick or deceive you out of money or goods in person, by telephone, or online":
+            1 = Yes (631)
+            2 = No (33040)
+            
+  cmact2 = "If anyone stole personal information or details held on computer or in online accounts (e.g. e-mail, social media)":
+            1 = Yes (437)
+            2 = No (33143)
+            
+  virus = "If computer or other internet-enabled device has been infected or interfered with e.g. by a virus":
+            1 = Yes (514)
+            2 = No (33116)
+  
+  
+PERSONAL VICTIMISATION
+  threviol2 = "If anyone has threatened to damage things/use force or violence":
+              1 = Yes (1117)
+              2 = No (32588)
+              
+  persthef = "If anything was stolen out of hands, pockets or bag":
+              1 = Yes (263)
+              2 = No (33451)
+              
+  oththef = "If anything has been stolen from a cloakroom, office etc.":
+              1 = Yes (311)
+              2 = No (33396)
+              
+  delibdam = "If personal items have been deliberately damaged":
+              1 = Yes (110)
+              2 = No (33607)
+              
+  delibvio = "If anyone has deliberately used force/violence on adult respondent":
+              1 = Yes (436)
+              2 = No (33277)
+              
+  sexattak = "If adult respondent has been sexually assaulted or attacked":
+              1 = Yes (90)
+              2 = No (33598)
+
+NULL CHARACTERISTICS
+  sex = "Adult number 1 (respondent): Sex":
+         1 = Male (15505)
+         2 = Female (18229)
+         
+  age = "Adult number 1 (respondent): Age":
+         16-104
+         
+  ehtgrp2a = "Ethnic Group (5 categories)":
+              1 = White (29918)
+              2 = Mixed (416)
+              3 = Asian or Asian British (1869)
+              4 = Black or Black British (957)
+              5 = Chinese or Other (473)
+              
+  tothhin4 = "Which is the gross income of the household AS A WHOLE":
+              1 = Up to 10,399 (2950)
+              2 = 10,400 - 20,799 (5887)
+              3 = 20,800 - 31,199 (5056)
+              4 = 31,200-41,599 (3798)
+              5 = 41,600 -51,999 (3214)
+              6 = 52,000 or more (6246)
+              7 = No income (0)
+              
+  educint = "Do you have any qualifications":
+              1 = Yes (27608)
+              2 = No (5992)
+  
+  
+  
+COMPOSITE VARIABLES
+  csew$WCRIME <- rowMeans(csew[,
+              c("wmugged_n", "wraped_n", "wattack_n", "wraceatt_n")], 
+              na.rm = TRUE)
+  Row means:
+  1 = 685 
+  1.5 = 342
+  2 = 1759  
+  2.5 = 737
+  3 = 2564
+  3.5  =  622
+  4 = 1255
+  
+  csew$WCRIME <- rowMeans(csew[,
+              c("wmugged_n", "wraped_n", "wattack_n", "wraceatt_n")], 
+              na.rm = TRUE)
+  Row means:
+  1 = 1657            
+  1.25 = 660
+  1.3x1013 = 12
+  1.5 = 1084
+  1.6x10127 = 20
+  1.75 = 1392
+  2 = 1290
+  2.25 = 463
+  2.3x1013 = 13
+  2.5 = 407
+  2.6x10127 = 9
+  2.75 = 342
+  3 = 220
+  3.25 = 136
+  3.3x1013 = 7
+  3.5 = 81
+  3.6x10127 = 4
+  3.75 = 74
+  4 = 96
+  
+  csew$PAWARE <- rowMeans(csew[,
+              c("pol1a_n", "pol1b_n", "pol1c_n", "pol1d_n", "pol1e_n")], 
+              na.rm = TRUE) 
+  Row means:
+  0 = 26383
+  0.2 = 4305   
+  0.4 = 1993   
+  0.6 = 647   
+  0.8 = 230    
+  1 = 162
+  
+  csew$CYVICTIM <- rowMeans(csew[,
+              c("noncon_n", "con_n", "trycon_n", "cmact2_n", "virus_n")], 
+              na.rm = TRUE) 
+  Row means
+  0.2 = 8133
+  0.25 = 75
+  0.314 = 9
+  0.4 = 511
+  0.5 = 11
+  0.6 = 28
+  0.6127 = 1
+  0.75 = 1
+  0.8 = 1
+  1 = 14
+
+  csew$VICTIM <- rowMeans(csew[,
+              c("Vmugged_n", "Vattack_n", "Vraped_n", "Vdamage_n", "Vtheft_n", "Vthreat_n")], 
+              na.rm = TRUE)
+  Row means:
+  0.16137 = 1879
+  0.2 = 1
+  0.315 = 186
+  0.5 = 21
+  0.6147 = 3
